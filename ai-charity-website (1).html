@@ -572,6 +572,83 @@
             color: white;
         }
 
+        /* Payment Method Selection */
+        .payment-methods {
+            margin: 2rem 0;
+        }
+
+        .payment-methods h3 {
+            color: var(--dark);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .payment-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .payment-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .payment-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-btn.selected {
+            border-color: var(--primary);
+            background: var(--gradient);
+            color: white;
+        }
+
+        .payment-btn.stripe {
+            border-color: #635bff;
+        }
+
+        .payment-btn.stripe:not(.selected):hover {
+            border-color: #635bff;
+            background: #635bff;
+            color: white;
+        }
+
+        .payment-btn.cashapp {
+            border-color: #00d632;
+        }
+
+        .payment-btn.cashapp:not(.selected):hover {
+            border-color: #00d632;
+            background: #00d632;
+            color: white;
+        }
+
+        .payment-btn.venmo {
+            border-color: #3d95ce;
+        }
+
+        .payment-btn.venmo:not(.selected):hover {
+            border-color: #3d95ce;
+            background: #3d95ce;
+            color: white;
+        }
+
         /* Footer */
         footer {
             background: var(--dark);
@@ -825,7 +902,22 @@
                 <input type="number" class="custom-amount" placeholder="Other" id="customAmount">
             </div>
             
-            <button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 3rem;">
+            <div class="payment-methods">
+                <h3>Choose Payment Method</h3>
+                <div class="payment-options">
+                    <button class="payment-btn stripe selected" onclick="selectPaymentMethod('stripe')">
+                        <span>💳</span> Stripe
+                    </button>
+                    <button class="payment-btn cashapp" onclick="selectPaymentMethod('cashapp')">
+                        <span>💲</span> CashApp
+                    </button>
+                    <button class="payment-btn venmo" onclick="selectPaymentMethod('venmo')">
+                        <span>📱</span> Venmo
+                    </button>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 3rem;" onclick="processDonation()">
                 Support Now 🚀
             </button>
             
@@ -1045,6 +1137,7 @@
         // Support functionality
         let selectedAmount = 250;
         let frequency = 'once';
+        let paymentMethod = 'stripe';
 
         function selectAmount(amount) {
             selectedAmount = amount;
@@ -1061,6 +1154,44 @@
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
+        }
+
+        function selectPaymentMethod(method) {
+            paymentMethod = method;
+            document.querySelectorAll('.payment-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+        }
+
+        function processDonation() {
+            // Get the final amount (check custom amount input)
+            const customAmount = document.getElementById('customAmount').value;
+            const finalAmount = customAmount ? parseFloat(customAmount) : selectedAmount;
+            
+            if (!finalAmount || finalAmount <= 0) {
+                alert('Please select or enter a valid donation amount.');
+                return;
+            }
+
+            // Display donation details
+            const donationDetails = `
+Donation Details:
+Amount: $${finalAmount}
+Frequency: ${frequency}
+Payment Method: ${paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)}
+
+Thank you for supporting AI development! 🚀
+            `;
+            
+            alert(donationDetails);
+            
+            // Here you would integrate with actual payment processors
+            console.log('Donation processed:', {
+                amount: finalAmount,
+                frequency: frequency,
+                paymentMethod: paymentMethod
+            });
         }
 
         // Smooth scrolling
